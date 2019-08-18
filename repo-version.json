@@ -1,0 +1,21 @@
+{
+  "major": 0,
+  "minor": 2,
+  "branches": [
+    {
+      "regex": "^master$",
+      "defaultLabel": "",
+      "mainline": true
+    },
+    {
+      "regex": "^support[/-].*$",
+      "defaultLabel": "",
+      "mainline": true
+    },
+    {
+      "regex": ".+",
+      "defaultLabel": "{BranchName}",
+      "mainline": false
+    }
+  ]
+}
