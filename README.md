@@ -2,6 +2,13 @@
 
 A Cake addin that provides automatic versioning using the [repo-version] tool.
 
+| package          | version                            | downloads                    |
+| ---------------- | -----------------------------------| -----------------------------|
+| Cake.RepoVersion | [![Nuget][current-version]][nuget] | [![Nuget][downloads]][nuget] |
+
+[current-version]: https://img.shields.io/nuget/v/cake.repoversion?style=plastic
+[downloads]:       https://img.shields.io/nuget/dt/cake.repoversion?style=plastic
+[nuget]:           https://www.nuget.org/packages/cake.repoversion
 [repo-version]: https://github.com/kjjuno/repo-version
 
 ## Quick Start
