@@ -1,0 +1,32 @@
+version: 2.0
+jobs:
+  pack:
+    docker:
+      - image: kjjuno/dev-dotnet:latest
+    steps:
+      - checkout
+      - run:
+          name: Run Build Script
+          command: ./build.sh --target Pack
+  publish:
+    docker:
+      - image: kjjuno/dev-dotnet:latest
+    steps:
+      - checkout
+      - run:
+          name: Run Build Script
+          command: ./build.sh --target Publish
+workflows:
+  version: 2
+  build-and-publish:
+    jobs:
+      - pack
+      - publish:
+          context: repo-version-secrets
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+              # only act on version tags
+            tags:
+              only: /.*/
