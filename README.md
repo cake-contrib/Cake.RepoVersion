@@ -32,10 +32,14 @@ Setup(context =>
 
 It is important that you also include the adding for `Newtonsfot.Json` and it must be `11.0.2`
 
+## Development Requirements
+
+1. .NET Core SDK 2.1 or greater
+2. mono (MacOS and Linux only)
+
 ## How to build
 
 This project uses a cake build script (of course!). From a bash shell run the following command
-
 
 ```bash
 ./build.sh
