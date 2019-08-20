@@ -30,7 +30,7 @@ Setup(context =>
 });
 ```
 
-It is important that you also include the adding for `Newtonsfot.Json` and it must be `11.0.2`
+It is important that you also include the adding for `Newtonsoft.Json` and it must be `11.0.2`
 
 ## How to build
 
