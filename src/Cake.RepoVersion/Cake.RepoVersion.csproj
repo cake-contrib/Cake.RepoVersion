@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <PackageOutputPath>../../nupkg</PackageOutputPath>
     <PackageIconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/cake-contrib-medium.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/kjjuno/repo-version</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/kjjuno/Cake.RepoVersion</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
