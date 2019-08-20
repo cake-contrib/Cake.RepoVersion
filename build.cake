@@ -54,7 +54,7 @@ Task("Publish")
              ApiKey = apiKey
          };
 
-         DotNetCoreNuGetPush($"nupkg/Cake.RepoVersion.{version}.nupkg", settings);
+         DotNetCoreNuGetPush($"nupkg/Cake.RepoVersion.{version.SemVer}.nupkg", settings);
     });
 
 RunTarget(target);
