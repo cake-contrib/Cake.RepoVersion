@@ -32,34 +32,7 @@ Setup(context =>
 
 It is important that you also include the adding for `Newtonsoft.Json` and it must be `11.0.2`
 
-## Development Requirements
+## Contributing
 
-1. .NET Core SDK 2.1 or greater
-2. mono (MacOS and Linux only)
-
-Or, just click [here](https://gitpod.io#https://github.com/kjjuno/Cake.RepoVersion) to open up a ready to go [Gitpod] development environment.
-
-[Gitpod]: https://gitpod.io
-
-## How to build
-
-This project uses a cake build script (of course!). From a bash shell run the following command
-
-```bash
-./build.sh
-```
-
-optionally you can provide a specific target
-
-
-```bash
-./build.sh --target <target>
-```
-
-Available Targets:
-
-| Target    | Description                                |
-| --------- | ------------------------------------------ |
-| Pack      | (Default) Creates NuGet packages           |
-| Publish   | Publishes nuget package to nuget.org       |
+Contributions are very welcome! Head over to the [Contributing](CONTRIBUTING.md) section for more information.
 
