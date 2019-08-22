@@ -18,7 +18,7 @@ Setup(context =>
         Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"));
         Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH"));
 
-        AppVeyor.UpdateBuildVersion(version.SemVer);
+        //AppVeyor.UpdateBuildVersion(version.SemVer);
     }
 
 });
