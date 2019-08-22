@@ -35,7 +35,6 @@ branches:
     - master
     - /release/.*/
     - /hotfix/.*/
-    - /feature/.*/
 
 #---------------------------------#
 #  Build Cache                    #
