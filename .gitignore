@@ -3,4 +3,3 @@ obj/
 nupkg/
 tools/
 *.swp
-recipe.cake
