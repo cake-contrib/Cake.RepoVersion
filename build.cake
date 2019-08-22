@@ -8,6 +8,9 @@ RepositoryVersion version;
 Setup(context =>
 {
     version = RepoVersion();
+    var branch = EnvironmentVariable("Git_Branch")?
+
+    Information(branch);
 
     if (BuildSystem.IsRunningOnAppVeyor)
     {
