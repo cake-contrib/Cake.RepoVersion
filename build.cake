@@ -8,17 +8,11 @@ RepositoryVersion version;
 Setup(context =>
 {
     version = RepoVersion();
-    var branch = EnvironmentVariable("APPVEYOR_REPO_BRANCH");
 
-    Information(branch);
+    Information($"Version: {version.SemVer}");
 
     if (BuildSystem.IsRunningOnAppVeyor)
     {
-        StartProcess("git", new ProcessSettings 
-            {
-                Arguments = "clean -fxd"
-            });
-
         AppVeyor.UpdateBuildVersion(version.SemVer);
     }
 
