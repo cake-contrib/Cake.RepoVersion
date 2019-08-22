@@ -8,6 +8,11 @@ RepositoryVersion version;
 Setup(context =>
 {
     version = RepoVersion();
+
+    if (BuildSystem.IsRunningOnAppVeyor)
+    {
+        AppVeyor.UpdateBuildVersion(version.SemVer);
+    }
 });
 
 Task("Pack")
