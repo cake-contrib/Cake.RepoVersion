@@ -14,13 +14,14 @@ Setup(context =>
 
     if (BuildSystem.IsRunningOnAppVeyor)
     {
+        StartProcess("git", new ProcessSettings 
+            {
+                Arguments = "clean -fxd"
+            });
+
         AppVeyor.UpdateBuildVersion(version.SemVer);
     }
 
-    StartProcess("git", new ProcessSettings 
-        {
-            Arguments = "status"
-        });
 });
 
 Task("Pack")
