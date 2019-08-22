@@ -13,6 +13,11 @@ Setup(context =>
 
     if (BuildSystem.IsRunningOnAppVeyor)
     {
+        Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_NUMBER"));
+        Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_TITLE"));
+        Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"));
+        Information(EnvironmentVariable("APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH"));
+
         AppVeyor.UpdateBuildVersion(version.SemVer);
     }
 
