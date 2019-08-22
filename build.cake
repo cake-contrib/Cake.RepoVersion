@@ -8,7 +8,7 @@ RepositoryVersion version;
 Setup(context =>
 {
     version = RepoVersion();
-    var branch = EnvironmentVariable("Git_Branch");
+    var branch = EnvironmentVariable("APPVEYOR_REPO_BRANCH");
 
     Information(branch);
 
