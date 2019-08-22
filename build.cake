@@ -16,6 +16,11 @@ Setup(context =>
     {
         AppVeyor.UpdateBuildVersion(version.SemVer);
     }
+
+    StartProcess("git", new ProcessSettings 
+        {
+            Arguments = "status"
+        });
 });
 
 Task("Pack")
