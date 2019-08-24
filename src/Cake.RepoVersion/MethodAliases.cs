@@ -38,7 +38,8 @@ namespace Cake.RepoVersion
             var toolPath = GetToolPath();
 
             // Get the latest version of repo-version that matches our major.minor
-            var text = Exec("dotnet", $"tool install --tool-path {toolPath} repo-version --version {version.Major}.{version.Minor}.*");
+            //var text = Exec("dotnet", $"tool install --tool-path {toolPath} repo-version --version {version.Major}.{version.Minor}.*");
+            var text = Exec("dotnet", $"tool install --tool-path {toolPath} repo-version --version 0.2.7.3-alpha");
             Console.WriteLine(text);
         }
 
