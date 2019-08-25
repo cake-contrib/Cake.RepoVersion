@@ -36,3 +36,4 @@ It is important that you also include the adding for `Newtonsoft.Json` and it mu
 
 Contributions are very welcome! Head over to the [Contributing](CONTRIBUTING.md) section for more information.
 
+IGNORE THIS
