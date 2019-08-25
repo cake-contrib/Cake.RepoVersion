@@ -1,5 +1,5 @@
 #addin nuget:?package=Cake.Json&version=4.0.0
-#addin nuget:?package=Cake.RepoVersion&version=0.2.7.1
+#addin nuget:?package=Cake.RepoVersion&version=0.2.8.24-exploring
 #addin nuget:?package=Newtonsoft.Json&version=11.0.2
 
 var target = Argument("target", "Pack");
