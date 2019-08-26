@@ -1,14 +1,12 @@
 #addin nuget:?package=Cake.Json&version=4.0.0
 #addin nuget:?package=Newtonsoft.Json&version=11.0.2
+#reference "src/Cake.RepoVersion/bin/Debug/netstandard2.0/Cake.RepoVersion.dll"
 
 var target = Argument("target", "Pack");
 RepositoryVersion version;
 
 Setup(context =>
 {
-    DotNetCoreBuild(".");
-
-    #reference "src/Cake.RepoVersion/bin/Debug/netstandard2.0/Cake.RepoVersion.dll"
     version = RepoVersion();
 
     Information($"Version: {version.SemVer}");

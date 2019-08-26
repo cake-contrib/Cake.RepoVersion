@@ -101,5 +101,6 @@ if ($DryRun) { $cakeArguments += "-dryrun" }
 $cakeArguments += $ScriptArgs
 
 Write-Host "Running build script..."
+& dotnet build
 & dotnet "$CAKE_EXE" $cakeArguments
 exit $LASTEXITCODE
