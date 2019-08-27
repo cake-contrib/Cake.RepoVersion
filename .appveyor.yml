@@ -41,7 +41,7 @@ branches:
 #  Build Cache                    #
 #---------------------------------#
 cache:
-- tools -> build.cake
+- tools -> build.cake, build.config
 
 #---------------------------------#
 #  Skip builds for doc changes    #
