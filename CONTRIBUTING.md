@@ -12,7 +12,7 @@ or would really like to see a new feature, please create an issue.
 2. mono (MacOS and Linux only)
 3. powershell
 
-Or, click [here](https://gitpod.io#https://cake-contrib/Cake.RepoVersion) to open a ready to go [Gitpod] environment
+Or, click [here](https://gitpod.io#https://github.com/cake-contrib/Cake.RepoVersion) to open a ready to go [Gitpod] environment
 
 [Gitpod]: https://gitpod.io
 
