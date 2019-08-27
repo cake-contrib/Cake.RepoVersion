@@ -1,6 +1,6 @@
 #addin nuget:?package=Cake.Json&version=4.0.0
-#addin nuget:?package=Cake.RepoVersion&version=0.2.7.1
 #addin nuget:?package=Newtonsoft.Json&version=11.0.2
+#reference "src/Cake.RepoVersion/bin/Debug/netstandard2.0/Cake.RepoVersion.dll"
 
 var target = Argument("target", "Pack");
 RepositoryVersion version;
@@ -21,7 +21,6 @@ Setup(context =>
 Task("Pack")
     .Does(() =>
     {
-
         DotNetCorePack(".", new DotNetCorePackSettings
             {
                 Configuration = "Release",
@@ -30,7 +29,6 @@ Task("Pack")
                     ["VERSION"] = version.SemVer
                 }
             });
-
     });
 
 Task("Publish")

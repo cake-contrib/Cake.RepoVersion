@@ -7,7 +7,7 @@ image: Visual Studio 2017
 #  Build Script                   #
 #---------------------------------#
 build_script:
-  - ps: .\build.ps1 -Target AppVeyor
+  - ps: .\build.ps1 --target=AppVeyor
 
 #---------------------------------#
 # Tests
@@ -31,16 +31,17 @@ skip_branch_with_pr: true
 branches:
   # Whitelist
   only:
-    - develop
     - master
-    - /release/.*/
+    - /support/.*/
     - /hotfix/.*/
+    - /feature/.*/
+    - /bugfix/.*/
 
 #---------------------------------#
 #  Build Cache                    #
 #---------------------------------#
 cache:
-- tools -> build.cake, tools/packages.config
+- tools -> build.cake, build.config
 
 #---------------------------------#
 #  Skip builds for doc changes    #

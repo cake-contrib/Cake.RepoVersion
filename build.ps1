@@ -1,105 +1,158 @@
 #!/usr/bin/env pwsh
+$DotNetInstallerUri = 'https://dot.net/v1/dotnet-install.ps1';
+$DotNetUnixInstallerUri = 'https://dot.net/v1/dotnet-install.sh'
+$DotNetChannel = 'LTS'
+$PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-##########################################################################
-# This is the Cake bootstrapper script for PowerShell.
-# This file was downloaded from https://github.com/cake-build/resources
-# Feel free to change this file to fit your needs.
-##########################################################################
+[string] $CakeVersion = ''
+[string] $DotNetVersion= ''
+foreach($line in Get-Content (Join-Path $PSScriptRoot 'build.config'))
+{
+  if ($line -like 'CAKE_VERSION=*') {
+      $CakeVersion = $line.SubString(13)
+  }
+  elseif ($line -like 'DOTNET_VERSION=*') {
+      $DotNetVersion =$line.SubString(15)
+  }
+}
 
-<#
 
-.SYNOPSIS
-This is a Powershell script to bootstrap a Cake build.
-
-.DESCRIPTION
-This Powershell script will download NuGet if missing, restore NuGet tools (including Cake)
-and execute your Cake build script with the parameters you provide.
-
-.PARAMETER Script
-The build script to execute.
-.PARAMETER Target
-The build script target to run.
-.PARAMETER Configuration
-The build configuration to use.
-.PARAMETER Verbosity
-Specifies the amount of information to be displayed.
-.PARAMETER ShowDescription
-Shows description about tasks.
-.PARAMETER DryRun
-Performs a dry run.
-.PARAMETER Experimental
-Uses the nightly builds of the Roslyn script engine.
-.PARAMETER ScriptArgs
-Remaining arguments are added here.
-
-.LINK
-https://cakebuild.net
-
-#>
-
-[CmdletBinding()]
-Param(
-    [string]$Script = "build.cake",
-    [ValidateSet("Pack", "Publish", "AppVeyor")]
-    [string]$Target,
-    [string]$Configuration,
-    [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
-    [string]$Verbosity,
-    [switch]$ShowDescription,
-    [Alias("WhatIf", "Noop")]
-    [switch]$DryRun,
-    [switch]$Experimental,
-    [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
-    [string[]]$ScriptArgs
-)
-
-Write-Host "Preparing to run build script..."
-
-$PSScriptRoot = split-path -parent $MyInvocation.MyCommand.Definition;
-
-$TOOLS_DIR = Join-Path $PSScriptRoot "tools"
-$CAKE_VERSION = "0.33.0"
-$CAKE_EXE = Join-Path $TOOLS_DIR "Cake.CoreCLR.$CAKE_VERSION/Cake.dll"
+if ([string]::IsNullOrEmpty($CakeVersion) -or [string]::IsNullOrEmpty($DotNetVersion)) {
+    'Failed to parse Cake / .NET Core SDK Version'
+    exit 1
+}
 
 # Make sure tools folder exists
-if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
-    Write-Verbose -Message "Creating tools directory..."
-    New-Item -Path $TOOLS_DIR -Type directory | out-null
+$ToolPath = Join-Path $PSScriptRoot "tools"
+if (!(Test-Path $ToolPath)) {
+    Write-Verbose "Creating tools directory..."
+    New-Item -Path $ToolPath -Type Directory -Force | out-null
 }
+
+
+if ($PSVersionTable.PSEdition -ne 'Core') {
+    # Attempt to set highest encryption available for SecurityProtocol.
+    # PowerShell will not set this by default (until maybe .NET 4.6.x). This
+    # will typically produce a message for PowerShell v2 (just an info
+    # message though)
+    try {
+        # Set TLS 1.2 (3072), then TLS 1.1 (768), then TLS 1.0 (192), finally SSL 3.0 (48)
+        # Use integers because the enumeration values for TLS 1.2 and TLS 1.1 won't
+        # exist in .NET 4.0, even though they are addressable if .NET 4.5+ is
+        # installed (.NET 4.5 is an in-place upgrade).
+        [System.Net.ServicePointManager]::SecurityProtocol = 3072 -bor 768 -bor 192 -bor 48
+      } catch {
+        Write-Output 'Unable to set PowerShell to use TLS 1.2 and TLS 1.1 due to old .NET Framework installed. If you see underlying connection closed or trust errors, you may need to upgrade to .NET Framework 4.5+ and PowerShell v3'
+      }
+}
+
+###########################################################################
+# INSTALL .NET CORE CLI
+###########################################################################
+
+Function Remove-PathVariable([string]$VariableToRemove)
+{
+    $SplitChar = ';'
+    if ($IsMacOS -or $IsLinux) {
+        $SplitChar = ':'
+    }
+
+    $path = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($path -ne $null)
+    {
+        $newItems = $path.Split($SplitChar, [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
+        [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join($SplitChar, $newItems), "User")
+    }
+
+    $path = [Environment]::GetEnvironmentVariable("PATH", "Process")
+    if ($path -ne $null)
+    {
+        $newItems = $path.Split($SplitChar, [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
+        [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join($SplitChar, $newItems), "Process")
+    }
+}
+
+# Get .NET Core CLI path if installed.
+$FoundDotNetCliVersion = $null;
+if (Get-Command dotnet -ErrorAction SilentlyContinue) {
+    $FoundDotNetCliVersion = dotnet --version;
+}
+
+if($FoundDotNetCliVersion -ne $DotNetVersion) {
+    $InstallPath = Join-Path $PSScriptRoot ".dotnet"
+    if (!(Test-Path $InstallPath)) {
+        New-Item -Path $InstallPath -ItemType Directory -Force | Out-Null;
+    }
+
+    if ($IsMacOS -or $IsLinux) {
+        $ScriptPath = Join-Path $InstallPath 'dotnet-install.sh'
+        (New-Object System.Net.WebClient).DownloadFile($DotNetUnixInstallerUri, $ScriptPath);
+        & bash $ScriptPath --version "$DotNetVersion" --install-dir "$InstallPath" --channel "$DotNetChannel" --no-path
+
+        Remove-PathVariable "$InstallPath"
+        $env:PATH = "$($InstallPath):$env:PATH"
+    }
+    else {
+        $ScriptPath = Join-Path $InstallPath 'dotnet-install.ps1'
+        (New-Object System.Net.WebClient).DownloadFile($DotNetInstallerUri, $ScriptPath);
+        & $ScriptPath -Channel $DotNetChannel -Version $DotNetVersion -InstallDir $InstallPath;
+
+        Remove-PathVariable "$InstallPath"
+        $env:PATH = "$InstallPath;$env:PATH"
+    }
+    $env:DOTNET_ROOT=$InstallPath
+}
+
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+$env:DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 
 ###########################################################################
 # INSTALL CAKE
 ###########################################################################
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-Function Unzip
-{
-    param([string]$zipfile, [string]$outpath)
-
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
-}
-
 # Make sure Cake has been installed.
-if (!(Test-Path $CAKE_EXE)) {
-    Write-Host "Installing Cake..."
-    (New-Object System.Net.WebClient).DownloadFile("https://www.nuget.org/api/v2/package/Cake.CoreCLR/$CAKE_VERSION", "$TOOLS_DIR/Cake.CoreCLR.zip")
-    Unzip "$TOOLS_DIR/Cake.CoreCLR.zip" "$TOOLS_DIR/Cake.CoreCLR.$CAKE_VERSION"
-    Remove-Item "$TOOLS_DIR/Cake.CoreCLR.zip"
+[string] $CakeExePath = ''
+[string] $CakeInstalledVersion = Get-Command dotnet-cake -ErrorAction SilentlyContinue  | % {&$_.Source --version}
+
+if ($CakeInstalledVersion -eq $CakeVersion) {
+    # Cake found locally
+    $CakeExePath = (Get-Command dotnet-cake).Source
+}
+else {
+    $CakePath = [System.IO.Path]::Combine($ToolPath,'.store', 'cake.tool', $CakeVersion) # Old PowerShell versions Join-Path only supports one child path
+
+    $CakeExePath = (Get-ChildItem -Path $ToolPath -Filter "dotnet-cake*" -File| ForEach-Object FullName | Select-Object -First 1)
+
+
+    if ((!(Test-Path -Path $CakePath -PathType Container)) -or (!(Test-Path $CakeExePath -PathType Leaf))) {
+
+        if ((![string]::IsNullOrEmpty($CakeExePath)) -and (Test-Path $CakeExePath -PathType Leaf))
+        {
+            & dotnet tool uninstall --tool-path $ToolPath Cake.Tool
+        }
+
+        & dotnet tool install --tool-path $ToolPath --version $CakeVersion Cake.Tool
+        if ($LASTEXITCODE -ne 0)
+        {
+            'Failed to install cake'
+            exit 1
+        }
+        $CakeExePath = (Get-ChildItem -Path $ToolPath -Filter "dotnet-cake*" -File| ForEach-Object FullName | Select-Object -First 1)
+    }
 }
 
 ###########################################################################
 # RUN BUILD SCRIPT
 ###########################################################################
 
-# Build Cake arguments
-$cakeArguments = @("$Script");
-if ($Target) { $cakeArguments += "-target=$Target" }
-if ($Configuration) { $cakeArguments += "-configuration=$Configuration" }
-if ($Verbosity) { $cakeArguments += "-verbosity=$Verbosity" }
-if ($ShowDescription) { $cakeArguments += "-showdescription" }
-if ($DryRun) { $cakeArguments += "-dryrun" }
-$cakeArguments += $ScriptArgs
+# Build project to create Cake.RepoVersion.dll
+& dotnet build
 
-Write-Host "Running build script..."
-& dotnet "$CAKE_EXE" $cakeArguments
+# Launch Cake Script
+& "$CakeExePath" ./build.cake --bootstrap
+if ($LASTEXITCODE -eq 0)
+{
+    & "$CakeExePath" ./build.cake $args
+}
 exit $LASTEXITCODE

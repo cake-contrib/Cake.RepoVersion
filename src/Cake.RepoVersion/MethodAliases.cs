@@ -34,11 +34,11 @@ namespace Cake.RepoVersion
 
         private static void EnsureRepoVersionIsInstalled()
         {
-            var version = GetVersion();
+            var version = "0.2.8.2";
             var toolPath = GetToolPath();
 
             // Get the latest version of repo-version that matches our major.minor
-            var text = Exec("dotnet", $"tool install --tool-path {toolPath} repo-version --version {version.Major}.{version.Minor}.*");
+            var text = Exec("dotnet", $"tool install --tool-path {toolPath} repo-version --version {version}");
             Console.WriteLine(text);
         }
 
@@ -55,17 +55,13 @@ namespace Cake.RepoVersion
             {
                 FileName = filename,
                 Arguments = arguments,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
             var proc = Process.Start(info);
             proc.WaitForExit();
 
             return proc.StandardOutput.ReadToEnd();
-        }
-
-        private static Version GetVersion()
-        {
-            return Assembly.GetExecutingAssembly().GetName().Version;
         }
     }
 }
