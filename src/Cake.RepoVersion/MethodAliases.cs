@@ -55,6 +55,7 @@ namespace Cake.RepoVersion
             {
                 FileName = filename,
                 Arguments = arguments,
+                UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
