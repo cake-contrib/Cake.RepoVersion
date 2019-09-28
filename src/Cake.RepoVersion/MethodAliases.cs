@@ -34,7 +34,7 @@ namespace Cake.RepoVersion
 
         private static void EnsureRepoVersionIsInstalled()
         {
-            var version = "0.2.9.3";
+            var version = "0.2.10.2";
             var toolPath = GetToolPath();
 
             // Get the latest version of repo-version that matches our major.minor
